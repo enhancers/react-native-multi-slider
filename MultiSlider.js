@@ -1,26 +1,24 @@
 import React from 'react';
-
 import {
-  StyleSheet,
-  PanResponder,
-  View,
-  Platform,
-  Dimensions,
   I18nManager,
   ImageBackground,
+  PanResponder,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-
-import DefaultMarker from './DefaultMarker';
+import { createArray, positionToValue, valueToPosition } from './converters';
 import DefaultLabel from './DefaultLabel';
-import { createArray, valueToPosition, positionToValue } from './converters';
+import DefaultMarker from './DefaultMarker';
 
 export default class MultiSlider extends React.Component {
   static defaultProps = {
     values: [0],
     onValuesChangeStart: () => {},
-    onValuesChange: values => {},
-    onValuesChangeFinish: values => {},
-    onMarkersPosition: values => {},
+    onValuesChange: (values) => {},
+    onValuesChangeFinish: (values) => {},
+    onMarkersPosition: (values) => {},
     step: 1,
     min: 0,
     max: 10,
@@ -53,8 +51,13 @@ export default class MultiSlider extends React.Component {
   constructor(props) {
     super(props);
 
-    if(this.props.minMarkerOverlapDistance > 0 && this.props.minMarkerOverlapStepDistance > 0) {
-      console.error('You should provide either "minMarkerOverlapDistance" or "minMarkerOverlapStepDistance", not both. Expect unreliable results.');
+    if (
+      this.props.minMarkerOverlapDistance > 0 &&
+      this.props.minMarkerOverlapStepDistance > 0
+    ) {
+      console.error(
+        'You should provide either "minMarkerOverlapDistance" or "minMarkerOverlapStepDistance", not both. Expect unreliable results.',
+      );
     }
 
     this.optionsArray =
@@ -62,7 +65,7 @@ export default class MultiSlider extends React.Component {
       createArray(this.props.min, this.props.max, this.props.step);
     this.stepLength = this.props.sliderLength / (this.optionsArray.length - 1);
 
-    var initialValues = this.props.values.map(value =>
+    var initialValues = this.props.values.map((value) =>
       valueToPosition(
         value,
         this.optionsArray,
@@ -101,15 +104,15 @@ export default class MultiSlider extends React.Component {
     };
 
     this._panResponderBetween = customPanResponder(
-      gestureState => {
+      (gestureState) => {
         this.startOne(gestureState);
         this.startTwo(gestureState);
       },
-      gestureState => {
+      (gestureState) => {
         this.moveOne(gestureState);
         this.moveTwo(gestureState);
       },
-      gestureState => {
+      (gestureState) => {
         this.endOne(gestureState);
         this.endTwo(gestureState);
       },
@@ -145,7 +148,7 @@ export default class MultiSlider extends React.Component {
     }
   };
 
-  moveOne = gestureState => {
+  moveOne = (gestureState) => {
     if (!this.props.enabledOne) {
       return;
     }
@@ -218,7 +221,7 @@ export default class MultiSlider extends React.Component {
     }
   };
 
-  moveTwo = gestureState => {
+  moveTwo = (gestureState) => {
     if (!this.props.enabledTwo) {
       return;
     }
@@ -287,7 +290,7 @@ export default class MultiSlider extends React.Component {
     }
   };
 
-  endOne = gestureState => {
+  endOne = (gestureState) => {
     if (gestureState.moveX === 0 && this.props.onToggleOne) {
       this.props.onToggleOne();
       return;
@@ -308,7 +311,7 @@ export default class MultiSlider extends React.Component {
     );
   };
 
-  endTwo = gestureState => {
+  endTwo = (gestureState) => {
     if (gestureState.moveX === 0 && this.props.onToggleTwo) {
       this.props.onToggleTwo();
       return;
@@ -432,6 +435,7 @@ export default class MultiSlider extends React.Component {
       ...(height && { height }),
       ...(width && { width }),
     };
+    console.log(touchStyle);
 
     const markerContainerOne = {
       top: markerOffsetY - 24,
@@ -471,6 +475,7 @@ export default class MultiSlider extends React.Component {
             ]}
             {...(twoMarkers ? this._panResponderBetween.panHandlers : {})}
           />
+
           {twoMarkers && (
             <View
               style={[
@@ -482,6 +487,39 @@ export default class MultiSlider extends React.Component {
             />
           )}
           <View
+            style={{
+              width: this.props.sliderLength + 10,
+              height: 48, //BAD SOLUTION
+              position: 'absolute',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+            }}
+          >
+            {this.props.optionsArray &&
+              this.props.optionsArray.map((val, index) => {
+                return (
+                  <View
+                    key={`${val}-${index}`}
+                    style={{ alignItems: 'center' }}
+                  >
+                    <View
+                      style={{
+                        marginBottom: 20,
+                        top: 2,
+                        width: 5,
+                        height: 5,
+                        backgroundColor: 'black',
+                        borderRadius: 2.5,
+                      }}
+                    />
+                    <Text style={this.props.labelTextStyle}>{val}</Text>
+                  </View>
+                );
+              })}
+          </View>
+
+          <View
             style={[
               styles.markerContainer,
               markerContainerOne,
@@ -491,7 +529,7 @@ export default class MultiSlider extends React.Component {
           >
             <View
               style={[styles.touch, touchStyle]}
-              ref={component => (this._markerOne = component)}
+              ref={(component) => (this._markerOne = component)}
               {...this._panResponderOne.panHandlers}
             >
               {isMarkersSeparated === false ? (
@@ -529,7 +567,7 @@ export default class MultiSlider extends React.Component {
             >
               <View
                 style={[styles.touch, touchStyle]}
-                ref={component => (this._markerTwo = component)}
+                ref={(component) => (this._markerTwo = component)}
                 {...this._panResponderTwo.panHandlers}
               >
                 {isMarkersSeparated === false ? (
