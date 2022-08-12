@@ -435,7 +435,6 @@ export default class MultiSlider extends React.Component {
       ...(height && { height }),
       ...(width && { width }),
     };
-    console.log(touchStyle);
 
     const markerContainerOne = {
       top: markerOffsetY - 24,
